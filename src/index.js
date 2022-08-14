@@ -1,4 +1,6 @@
 import Movements from "./movements.js";
+import blockchain from "./Web3.js";
+import abi from "./abi/abi.json" assert { type: "json" };
 
 // Declaration of a new scene with Three.js
 const scene = new THREE.Scene();
@@ -97,3 +99,65 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+// create a new NFT
+const buttonMint = document.getElementById("mint");
+buttonMint.addEventListener("click", mintNFT);
+
+function mintNFT() {
+  // parameters to create a NFT in the metaverse
+  const nft_name = document.getElementById("nft_name").value;
+  const nft_width = document.getElementById("nft_width").value;
+  const nft_height = document.getElementById("nft_height").value;
+  const nft_depth = document.getElementById("nft_depth").value;
+  const x_position = document.getElementById("x_position").value;
+  const y_position = document.getElementById("y_position").value;
+  const z_position = document.getElementById("z_position").value;
+
+  // if metamask is not available, notify user that they need to use metamask
+  if (typeof window.ethereum === "undefined") {
+    rej("You should install Metamask!");
+  }
+  // start a web3 instance
+  let web3 = new Web3(window.ethereum);
+
+  // create a new contract instance with all its methods and events defined in json interface object
+  let contract = new web3.eth.Contract(
+    abi,
+    "0x78943609D8236Bf61BCf6b84adA0d701a6f91a35"
+  );
+
+  web3.eth.requestAccounts().then((accounts) => {
+    contract.methods
+      .mint(
+        nft_name,
+        nft_width,
+        nft_height,
+        nft_depth,
+        x_position,
+        y_position,
+        z_position
+      )
+      .send({ from: accounts[0] })
+      .then(console.log("NFT created in the Metaverse!"));
+  });
+}
+
+// establish direct connection with web3 for information generated in the blockchain
+blockchain.then((result) => {
+  // for each building that's been paid for in the smart contract, there will be a graphical representation in the metaverse
+  result.building.forEach((building, index) => {
+    if (index <= result.supply) {
+      // condition to represent NFT tokens
+      const boxGeometry = new THREE.BoxGeometry(
+        building.w,
+        building.h,
+        building.d
+      );
+      const boxMaterial = new THREE.MeshPhongMaterial({ color: 0x33fffc });
+      const nft = new THREE.Mesh(boxGeometry, boxMaterial);
+      nft.position.set(building.x, building.y, building.z);
+      scene.add(nft);
+    }
+  });
+});
