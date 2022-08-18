@@ -62,7 +62,7 @@ const blockchain = new Promise((res, rej) => {
           .getBuildings()
           .call({ from: accounts[0] })
           .then((data) => {
-            return { supply: supply, buildings: data };
+            res({ supply: supply, building: data });
           });
       });
   });

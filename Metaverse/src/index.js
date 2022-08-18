@@ -115,7 +115,7 @@ function mintNFT() {
   const z_position = document.getElementById("z_position").value;
 
   // if metamask is not available, notify user that they need to use metamask
-  if (typeof window.ethereum === "undefined") {
+  if (typeof window.ethereum == "undefined") {
     rej("You should install Metamask!");
   }
   // start a web3 instance
@@ -127,7 +127,7 @@ function mintNFT() {
     "0x78943609D8236Bf61BCf6b84adA0d701a6f91a35"
   );
 
-  web3.eth.requestAccounts().then((accounts) => {
+  web3.eth.getAccounts().then((accounts) => {
     contract.methods
       .mint(
         nft_name,
@@ -154,7 +154,7 @@ blockchain.then((result) => {
         building.h,
         building.d
       );
-      const boxMaterial = new THREE.MeshPhongMaterial({ color: 0x33fffc });
+      const boxMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff });
       const nft = new THREE.Mesh(boxGeometry, boxMaterial);
       nft.position.set(building.x, building.y, building.z);
       scene.add(nft);
